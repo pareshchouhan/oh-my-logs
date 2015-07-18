@@ -5,11 +5,19 @@ var express = require('express'),
 	_ = require('underscore')
 	assert = require('assert'),
 	path = require('path'),
-	regexp = require('node-regexp');
+	regexp = require('node-regexp'),
+	morgan = require('morgan');
 
 //Require config.js, check config.js for minimal configuration.
 var config = require('./config.js');
-var checkDrives = /([A-Za-z]):.*/
+var checkDrives = /([A-Za-z]):.*/;
+
+// Development Only
+// Log format : 'tiny' , 'short', 'dev', 'common', 'combined' (Apache)
+if ( 'development' == app.get('env') ) {
+	app.use( morgan('tiny') );
+}
+
 
 
 //Middle ware are called in order , so lessMiddleWare is called before express.static.
