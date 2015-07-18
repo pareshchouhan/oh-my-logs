@@ -2,34 +2,44 @@
 include ./header.jade
 style
     include ../css/bootstrap.min.css
-style
-    include ../css/bootstrap.min.css
 script(src='../js/bootstrap.min.js')
+
+
 body
-    h1 oh-my-log
-    div#container.col
+    nav(role="navigation").navbar.navbar-default
+        .navbar-header
+            button(type="button", data-toggle="collapse", data-target=".navbar-ex1-collapse").navbar-toggle.collapsed
+            a(href="#" ).navbar-brand oh-my-logs
+        .collapse.navbar-collapse.navbar-ex1-collapse
+            ul.nav.navbar-nav 
     
-    if filesObj
-        P
-            a(href="#{upPath}") Up
-        table.table.table-hover
-                thead
-                    tr
-                        th Directory
-                        th Info
-                each item in filesObj
-                    tr
-                    td 
-                        a(href='/?dir=#{currentPath}/#{item.path}&isFile=#{item.isFile}') #{item.path}
-                    td
-                        if item.isFile == true
-                            p [file]
-                        else
-                            p [dir]
-    else if error
-        p error
-    else
-        p
+    div#container.col(style="padding-left: 20px; padding-right:20px")
+    
+        if filesObj
+            table.table.table-hover
+                    thead
+                        tr
+                            th 
+                                a(href="#{upPath}") 
+                                    button(type="button").btn.btn-primary Up 
+                                        span.glyphicon.glyphicon-arrow-up
+                            th(style="width:85%") Directory
+                            th Info
+                    each item in filesObj
+                        tr
+                        td
+
+                        td 
+                            a(href='/?dir=#{currentPath}/#{item.path}&isFile=#{item.isFile}') #{item.path}
+                        td
+                            if item.isFile == true
+                                p [file]
+                            else
+                                p [dir]
+        else if error
+            p error
+        else
+            p
 
     if file
         p 
