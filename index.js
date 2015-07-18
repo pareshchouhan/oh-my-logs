@@ -15,14 +15,14 @@ var checkDrives = /([A-Za-z]):.*/
 //Middle ware are called in order , so lessMiddleWare is called before express.static.
 //For adding more security write your own middleware before static.
 //User static file serving middleware.
-app.use(lessMiddleware(__dirname + '/public'));
-app.use(express.static(path.join(__dirname, 'public')));
+//app.use(lessMiddleware(__dirname + '/public'));
+//app.use(express.static(path.join(__dirname, 'public')));
 
 //Set template engine to jade.
 app.set('views', path.join(__dirname, '/public/templates'));
 app.set('view engine', 'jade');
 
-var port = process.env.PORT || 1080;
+var port = process.env.PORT || config.port || 1080;
 
 app.listen(port,function(err)	{
 	if(err)	console.log(err);

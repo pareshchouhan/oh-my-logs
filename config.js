@@ -1,4 +1,5 @@
 module.exports = {
+	port : 1080,
 	//Page title in case you want to change.
 	pageTitle : 'oh-my-logs',
 	//TODO : favicon.ico support.
