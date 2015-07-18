@@ -13,9 +13,9 @@ var config = require('./config.js');
 var checkDrives = /([A-Za-z]):.*/;
 
 // Development Only
-// Log format : 'tiny' , 'short', 'dev', 'common', 'combined' (Apache)
+// Log format : 'tiny' , 'short', 'dev' (colored), 'common', 'combined' (Apache)
 if ( 'development' == app.get('env') ) {
-	app.use( morgan('tiny') );
+	app.use( morgan('dev') );
 }
 
 
