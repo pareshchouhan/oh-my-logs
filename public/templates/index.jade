@@ -1,0 +1,32 @@
+//#use bst-* for auto completion
+include ./header.jade
+style
+    include ../css/bootstrap.min.css
+style
+    include ../css/bootstrap.min.css
+script(src='../js/bootstrap.min.js')
+body
+    h1 oh-my-log
+    div#container.col
+    
+    if dataDir
+        P
+            a(href="#{upPath}") Up
+        table.table.table-hover
+                thead
+                    tr
+                        th Directory
+                each item in dataDir
+                    tr
+                    td 
+                        a(href='#{path}/#{item}') #{item}
+    else if error
+        p error
+    else
+        p
+
+    if file
+        p 
+            a(href="#{upPath}") Up
+        .container
+            p !{file}
