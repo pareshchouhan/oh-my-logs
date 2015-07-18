@@ -7,19 +7,19 @@ var express = require('express'),
 	path = require('path'),
 	regexp = require('node-regexp');
 
+//Require config.js, check config.js for minimal configuration.
 var config = require('./config.js');
-
-//Don't allow traversal of 2 up directories.
-// var badWords = regexp().either('../../').toRegExp();
 var checkDrives = /([A-Za-z]):.*/
-// var fileMatch = regexp().either('.txt','.log','.logs','.md').toRegExp();
 
-//app.use(express.bodyParser());
+
+//Middle ware are called in order , so lessMiddleWare is called before express.static.
+//For adding more security write your own middleware before static.
+//User static file serving middleware.
 app.use(lessMiddleware(__dirname + '/public'));
 app.use(express.static(path.join(__dirname, 'public')));
 
+//Set template engine to jade.
 app.set('views', path.join(__dirname, '/public/templates'));
-//app.set('view engine', 'ejs');
 app.set('view engine', 'jade');
 
 var port = process.env.PORT || 1080;
@@ -29,53 +29,35 @@ app.listen(port,function(err)	{
 	console.log('Listening on ' + port);
 });
 
-
+//Handle request on '/'
 app.get('/',function(req,res){
-	console.log('Got a request for /');
-	fs.readdir('./public',function(err,files){
-		if(err)	res.end(err.toString());
-		res.end(files);
-	});
-});
-
-app.get('/test', function(req,res){
-	res.render('index', {pageTitle : config.pageTitle});
-});
-
-
-app.get('/logs',function(req,res){
 
 	if(req.query.dir != null)	{
-		console.log(req.query.dir.match(checkDrives));
-		
+		//badwords check, edit config.js to edit the list of badwords.
 		for(word in config.badWords)	{
 			var badWordRegex = regexp();
 			badWordRegex.must(config.badWords[word]);
 			badWordRegex = badWordRegex.toRegExp();	
-			console.log("Bad Words Regex : " + req.query.dir.match(badWordRegex));
 		}
-		console.log("Drive Check Regex : " + req.query.dir.match(checkDrives));
-		
 	}	
 	
-
+	//general checks on dir and badwords and if the user is trying to access drives like "/?dir=C:\" etc.
 	if(req.query.dir == null || req.query.dir == "" || req.query.dir.match(badWordRegex) || req.query.dir.match(checkDrives))	{
 		fs.readdir('./',function(err,files){
 			if(err)	res.end(err.toString());
-			//res.redirect('/logs',302);
-			console.log("Test");
+			//Replace last called thingy.
 			var uppath = req.originalUrl.replace(req.originalUrl.split("/")[req.originalUrl.split("/").length - 1],"");
+			//Render jade page.
 			res.render('index', {pageTitle : config.pageTitle, 
 				dataDir : files, 
 				path : req.path + '?dir=.',
 				upPath : uppath
 			});
-			//res.end(JSON.stringify(files));
 		});	
 	}
 	else {
 		var fileExtensionCheck = false;
-
+		//File Extension check.
 		for(extension in config.fileMatch)	{
 			if(req.query.dir.match(regexp().end(config.fileMatch[extension]).toRegExp()))	{
 				fileExtensionCheck = true;
@@ -85,6 +67,8 @@ app.get('/logs',function(req,res){
 		if(fileExtensionCheck)	{
 			fs.readFile(req.query.dir,'utf-8',function(err,file)	{
 				if(err) res.end(JSON.stringify(err));
+				//change \r\n to <br> (linebreaks) maybe later we can switch to http://hilite.me/
+				//TODO : port http://hilite.me/api to node.js
 				file = file.replace(/\n?\r\n/g, '<br />' );
 				var uppath = req.originalUrl.replace(req.originalUrl.split("/")[req.originalUrl.split("/").length - 1],"");
 				res.render('index', {pageTitle : config.pageTitle, 
@@ -92,7 +76,6 @@ app.get('/logs',function(req,res){
 					path : req.originalUrl, 
 					upPath : uppath
 				});
-				//res.end(JSON.stringify(files));
 			});
 		}
 		else {
@@ -103,8 +86,7 @@ app.get('/logs',function(req,res){
 					dataDir : files, 
 					path : req.originalUrl,
 					upPath : uppath
-				});
-				//res.end(JSON.stringify(files));
+				});				
 			});
 		}
 			
