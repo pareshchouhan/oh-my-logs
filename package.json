@@ -1,0 +1,28 @@
+{
+  "name": "oh-my-logs",
+  "version": "0.0.1",
+  "description": "oh-my-logs is a handy node.js utility for reading logs.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ludkiller/oh-my-logs.git"
+  },
+  "keywords": [
+    "oh-my-logs",
+    "logs",
+    "log",
+    "express"
+  ],
+  "author": "lud",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ludkiller/oh-my-logs/issues"
+  },
+  "homepage": "https://github.com/ludkiller/oh-my-logs#readme",
+  "dependencies": {
+    "express": "^4.13.1"
+  }
+}
