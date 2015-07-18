@@ -14,7 +14,6 @@ body
             ul.nav.navbar-nav 
     
     div#container.col(style="padding-left: 20px; padding-right:20px")
-    
         if filesObj
             table.table.table-hover
                     thead
@@ -41,8 +40,11 @@ body
         else
             p
 
-    if file
-        p 
-            a(href="#{upPath}") Up
-        .container
-            p !{file}
+    div.file(style="padding-left: 20px; padding-right:20px")
+        if file
+            p 
+                a(href="#{upPath}") 
+                    button(type="button").btn.btn-primary Up 
+                        span.glyphicon.glyphicon-arrow-up
+            div.container
+                p !{file}
