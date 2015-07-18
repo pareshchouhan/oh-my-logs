@@ -53,46 +53,99 @@ app.get('/',function(req,res){
 	if(req.query.dir == null || req.query.dir == "" || req.query.dir.match(badWordRegex) || req.query.dir.match(checkDrives))	{
 		fs.readdir('./',function(err,files){
 			if(err)	res.end(err.toString());
+
+			var filesInfoObj = [];
+
+			if(files.length != 0)	{
+				for (var fileIndex in files)	{
+					
+					var stats = fs.statSync('./' + files[fileIndex]);
+					if(stats != undefined)	{
+						var fileObj = {};	
+						fileObj.path = files[fileIndex];
+						fileObj.isFile = stats.isFile();
+						fileObj.isDirectory = stats.isDirectory();
+						filesInfoObj.push(fileObj);	
+					}
+				}
+			}
+
 			//Replace last called thingy.
-			var uppath = req.originalUrl.replace(req.originalUrl.split("/")[req.originalUrl.split("/").length - 1],"");
+			var uppath = req.path.replace(req.path.split("/")[req.path.split("/").length - 1],"");
 			//Render jade page.
 			res.render('index', {pageTitle : config.pageTitle, 
-				dataDir : files, 
+				filesObj : filesInfoObj,
 				path : req.path + '?dir=.',
+				currentPath : req.query.dir != undefined ? req.query.dir : './',
 				upPath : uppath
 			});
 		});	
 	}
 	else {
-		var fileExtensionCheck = false;
-		//File Extension check.
-		for(extension in config.fileMatch)	{
-			if(req.query.dir.match(regexp().end(config.fileMatch[extension]).toRegExp()))	{
-				fileExtensionCheck = true;
-			}
-		}
+		var requestFile = JSON.parse(req.query.isFile);
+		if(requestFile)	{
+			var fileName = req.query.dir.split("/")[req.query.dir.split("/").length - 1];
 
-		if(fileExtensionCheck)	{
-			fs.readFile(req.query.dir,'utf-8',function(err,file)	{
-				if(err) res.end(JSON.stringify(err));
-				//change \r\n to <br> (linebreaks) maybe later we can switch to http://hilite.me/
-				//TODO : port http://hilite.me/api to node.js
-				file = file.replace(/\n?\r\n/g, '<br />' );
-				var uppath = req.originalUrl.replace(req.originalUrl.split("/")[req.originalUrl.split("/").length - 1],"");
-				res.render('index', {pageTitle : config.pageTitle, 
-					file : file, 
-					path : req.originalUrl, 
-					upPath : uppath
-				});
-			});
+			fileName = fileName.split("\\")[fileName.split("\\").length - 1];
+			var extension = fileName.split(".")[fileName.split(".").length - 1];
+			var deepFileExtensionCheck = false;
+			//Deep File Extension check.
+			if(extension.length == 0 || fileName == extension)	{
+				deepFileExtensionCheck = true;
+			}
+			else {
+				for(ext in config.fileMatch)	{
+					if(extension.match(regexp().end(config.fileMatch[ext]).toRegExp()))	{
+						deepFileExtensionCheck = true;
+					}
+				}
+			}
+			
+			if(deepFileExtensionCheck)	{
+				fs.readFile(req.query.dir,'utf-8',function(err,file)	{
+					if(err) res.end(JSON.stringify(err));
+					//change \r\n to <br> (linebreaks) maybe later we can switch to http://hilite.me/
+					//TODO : port http://hilite.me/api to node.js
+					file = file.replace(/\n?\r\n/g, '<br />' );
+					var uppath = req.path.replace(req.path.split("/")[req.path.split("/").length - 1],"");
+					res.render('index', {pageTitle : config.pageTitle, 
+						file : file, 
+						path : req.path, 
+						currentPath : req.query.dir != undefined ? req.query.dir : './',
+						upPath : uppath
+					});
+				});	
+			}
+			else {
+				res.end('Error, File extension mismatch');
+			}
+			
 		}
 		else {
 			fs.readdir(req.query.dir,function(err,files){
 				if(err)	res.end(err.toString());
-				var uppath = req.originalUrl.replace(req.originalUrl.split("/")[req.originalUrl.split("/").length - 1],"");
+
+				var filesInfoObj = [];
+
+				if(files.length != 0)	{
+					for (var fileIndex in files)	{
+						
+						var stats = fs.statSync(req.query.dir + '\\' + files[fileIndex]);
+						if(stats != undefined)	{
+							var fileObj = {};	
+							fileObj.path = files[fileIndex];
+							fileObj.isFile = stats.isFile();
+							fileObj.isDirectory = stats.isDirectory();
+							filesInfoObj.push(fileObj);	
+						}
+					}
+				}
+
+				var uppath = req.path.replace(req.path.split("/")[req.path.split("/").length - 1],"");
 				res.render('index', {pageTitle : config.pageTitle, 
-					dataDir : files, 
-					path : req.originalUrl,
+					path : req.path,
+					currentPath : req.query.dir != undefined ? req.query.dir : './',
+					filesObj : filesInfoObj,
 					upPath : uppath
 				});				
 			});

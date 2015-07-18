@@ -6,5 +6,5 @@ module.exports = {
 	//Directories that are not accessible "../../" denys every url which has "../../" in it.
 	badWords : ['../../'],
 	//Which files user can open.
-	fileMatch : ['.txt', '.log', '.md', '.logs', '.html', '.css', '.js']
+	fileMatch : ['txt', 'log', 'md', 'logs', 'html', 'css', 'js']
 };

@@ -9,17 +9,23 @@ body
     h1 oh-my-log
     div#container.col
     
-    if dataDir
+    if filesObj
         P
             a(href="#{upPath}") Up
         table.table.table-hover
                 thead
                     tr
                         th Directory
-                each item in dataDir
+                        th Info
+                each item in filesObj
                     tr
                     td 
-                        a(href='#{path}/#{item}') #{item}
+                        a(href='/?dir=#{currentPath}/#{item.path}&isFile=#{item.isFile}') #{item.path}
+                    td
+                        if item.isFile == true
+                            p [file]
+                        else
+                            p [dir]
     else if error
         p error
     else
