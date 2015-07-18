@@ -71,7 +71,7 @@ app.get('/',function(req,res){
 			}
 
 			//Replace last called thingy.
-			var uppath = req.path.replace(req.path.split("/")[req.path.split("/").length - 1],"");
+			var uppath = "./";
 			//Render jade page.
 			res.render('index', {pageTitle : config.pageTitle, 
 				filesObj : filesInfoObj,
@@ -82,7 +82,9 @@ app.get('/',function(req,res){
 		});	
 	}
 	else {
-		var requestFile = JSON.parse(req.query.isFile);
+		var requestFile;
+		if(req.query.isFile != undefined )
+			requestFile = JSON.parse(req.query.isFile);
 		if(requestFile)	{
 			var fileName = req.query.dir.split("/")[req.query.dir.split("/").length - 1];
 
@@ -107,12 +109,13 @@ app.get('/',function(req,res){
 					//change \r\n to <br> (linebreaks) maybe later we can switch to http://hilite.me/
 					//TODO : port http://hilite.me/api to node.js
 					file = file.replace(/\n?\r\n/g, '<br />' );
-					var uppath = req.path.replace(req.path.split("/")[req.path.split("/").length - 1],"");
+					var uupath = req.originalUrl.replace(req.query.dir.split("/")[req.query.dir.split("/").length - 1],"");
+					var upath  = uupath.substring(0,uupath.lastIndexOf('/'));
 					res.render('index', {pageTitle : config.pageTitle, 
 						file : file, 
 						path : req.path, 
 						currentPath : req.query.dir != undefined ? req.query.dir : './',
-						upPath : uppath
+						upPath : upath
 					});
 				});	
 			}
@@ -141,12 +144,13 @@ app.get('/',function(req,res){
 					}
 				}
 
-				var uppath = req.path.replace(req.path.split("/")[req.path.split("/").length - 1],"");
+				var uupath = req.originalUrl.replace(req.query.dir.split("/")[req.query.dir.split("/").length - 1],"");
+				var upath  = uupath.substring(0,uupath.lastIndexOf('/'));
 				res.render('index', {pageTitle : config.pageTitle, 
 					path : req.path,
 					currentPath : req.query.dir != undefined ? req.query.dir : './',
 					filesObj : filesInfoObj,
-					upPath : uppath
+					upPath : upath
 				});				
 			});
 		}
